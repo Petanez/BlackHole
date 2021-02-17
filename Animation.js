@@ -15,7 +15,7 @@ class Animation {
     }
         
     schedule() {
-        if (this.turn < 5) 
+        if (this.spaceState.objects.length > 0) 
             this.tick()
         else 
             console.log("Done")
@@ -24,18 +24,30 @@ class Animation {
     createObjects() {
         for (let obj of this.spaceState.objects) {
             let objEl = document.createElement("div")
-            objEl.style = `position: absolute; top: ${obj.pos.y}px; left: ${obj.pos.x}px; width: ${obj.d}px; height: ${obj.d}px; background: grey; border-radius: 99999px; transition: 1s linear;`
+            objEl.style = `position: absolute; top: ${obj.pos.y}px; left: ${obj.pos.x}px; width: ${obj.d}px; height: ${obj.d}px; background: black; border-radius: 99999px; transition: 1s linear;`
             this.objectEls.push(this.spaceEl.appendChild(objEl))
         }
     }
 
     updateObjects() {
-        for (let i = 0; i < this.spaceState.objects.length; i++) {
+        console.log("objectEls length is " + this.objectEls.length)
+        let bHX = this.spaceState.blackHole.pos.x
+        let bHY = this.spaceState.blackHole.pos.y
+        for (let i = this.spaceState.objects.length - 1; i >= 0; i--) {
+            let obj = this.objectEls[i]
+            let distFromCentreX = Math.abs(bHX - this.spaceState.objects[i].pos.x)
+            let distFromCentreY = Math.abs(bHY - this.spaceState.objects[i].pos.y)
+            console.log(distFromCentreX)
             let x = this.spaceState.objects[i].pos.x
             let y = this.spaceState.objects[i].pos.y
-            let obj = this.objectEls[i]
-            obj.style.left = x + "px"
-            obj.style.top = y + "px"
+            if (distFromCentreY < 20 && distFromCentreX < 20) {
+                this.spaceState.objects.splice(i, 1)
+                this.objectEls.splice(i, 1)
+                obj.remove() 
+            } else {
+                obj.style.left = x + "px"
+                obj.style.top = y + "px"
+            }
         }
     }
 
